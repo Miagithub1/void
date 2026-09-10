@@ -126,9 +126,7 @@
   .hero-stats{ display:flex; gap: 34px; margin-top: 44px; }
   .hero-stats div{ }
   .hero-stats .num{ font-family:'IBM Plex Mono'; font-size: 22px; font-weight: 600; }
-  .hero-stats .lbl{ font-size: 12px; color: var(--ink-dim); margin-top: 4px; }
-
-  /* Featured pilot card */
+  .hero-stats .lbl{ font-size: 12px; color: var(--ink-dim); margin-top: 4px; }/* Featured pilot card */
   .feature-card{
     background: var(--panel);
     border: 1px solid var(--panel-line);
@@ -205,8 +203,7 @@
   .reveal-bar{ display:flex; justify-content:center; margin-top: 36px; }
 
   /* MINT */
-  .mint-panel{
-    background: var(--panel); border: 1px solid var(--panel-line); border-radius: var(--radius);
+  .mint-panel{background: var(--panel); border: 1px solid var(--panel-line); border-radius: var(--radius);
     padding: 48px; display:grid; grid-template-columns: 1fr auto; align-items:center; gap: 30px;
   }
   .mint-panel h3{ font-size: 26px; font-weight: 700; margin-bottom: 10px; }
@@ -216,6 +213,25 @@
   .mint-note{ font-size: 12px; color: var(--ink-dim); margin-top: 8px; max-width: 380px; }
   .mint-cta{ display:flex; flex-direction: column; align-items: flex-end; gap: 10px; }
   .wallet-status{ font-family:'IBM Plex Mono'; font-size: 12px; color: var(--ink-dim); max-width: 220px; text-align:right; }
+
+  /* WHITELIST */
+  .whitelist-panel{
+    background: var(--panel); border: 1px solid var(--panel-line); border-radius: var(--radius);
+    padding: 48px; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap: 24px;
+  }
+  .whitelist-panel h3{ font-size: 26px; font-weight: 700; margin-bottom: 10px; }
+  .whitelist-panel p{ color: var(--ink-dim); font-size: 14px; max-width: 420px; }
+  .whitelist-form{ display:flex; flex-direction: column; gap: 10px; min-width: 280px; }
+  .whitelist-form input[type="email"],
+  .whitelist-form input[type="text"]{
+    background: var(--bg); border: 1px solid var(--panel-line); border-radius: var(--radius);
+    color: var(--ink); padding: 14px 16px; font-family: 'Inter', sans-serif; font-size: 14px;
+    min-width: 260px; outline: none; width: 100%;
+  }
+  .whitelist-form input[type="email"]:focus,
+  .whitelist-form input[type="text"]:focus{ border-color: var(--epic); }
+  .whitelist-note{ font-size: 12px; color: var(--ink-dim); margin-top: 8px; max-width: 380px; }
+  .whitelist-success{ font-size: 13px; color: var(--legendary); margin-top: 10px; display:none; }
 
   /* STORY */
   .story{ display:grid; grid-template-columns: 0.85fr 1.15fr; gap: 56px; align-items: center; }
@@ -242,8 +258,7 @@
   .rm-status.live{ color: var(--rare); border-color: var(--rare); }
 
   /* TEAM */
-  .team-grid{ display:grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
-  .team-card{ background: var(--panel); border: 1px solid var(--panel-line); border-radius: var(--radius); padding: 16px; }
+  .team-grid{ display:grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }.team-card{ background: var(--panel); border: 1px solid var(--panel-line); border-radius: var(--radius); padding: 16px; }
   .team-avatar{ aspect-ratio: 1/1; border-radius: 2px; overflow:hidden; background:#0E1420; margin-bottom: 14px; }
   .team-name{ font-family:'Space Grotesk'; font-weight: 600; font-size: 14px; }
   .team-role{ font-family:'IBM Plex Mono'; font-size: 11px; color: var(--ink-dim); margin-top: 3px; }
@@ -298,6 +313,7 @@
       <a href="#utility">Utility</a>
       <a href="#roadmap">Roadmap</a>
       <a href="#faq">FAQ</a>
+      <a href="#whitelist">Whitelist</a>
       <a href="#mint">Mint</a>
       <span class="count mono" id="navCount">10,000 pilots</span>
     </div>
@@ -323,9 +339,7 @@
   <div class="feature-card" id="featureCard">
     <!-- populated by JS -->
   </div>
-</header>
-
-<section id="story">
+</header><section id="story">
   <div class="wrap story">
     <div class="story-art" id="storyArt"></div>
     <div class="story-body">
@@ -413,8 +427,7 @@
       <div class="rm-row">
         <div class="rm-phase"><b>02</b>Q2</div>
         <div class="rm-body">
-          <h4>Council formation</h4>
-          <p>Holder governance opens. First votes on track design and reward weighting.</p>
+          <h4>Council formation</h4><p>Holder governance opens. First votes on track design and reward weighting.</p>
           <span class="rm-status">Planned</span>
         </div>
       </div>
@@ -478,14 +491,34 @@
   </div>
 </section>
 
+<section id="whitelist">
+  <div class="wrap">
+    <div class="whitelist-panel">
+      <div>
+        <h3>Join the whitelist</h3>
+        <p>Drop your email to get early access and a whitelist spot before public mint.</p>
+      </div>
+      <div>
+        <form class="whitelist-form" id="whitelistForm" action="https://script.google.com/macros/s/AKfycbwfMCmG8tYR5YbM2mxHgoPHCiSnjaTJuQYg1AfO6HW8y2pJX2gp8m3cS9nNN_voWQ0nhQ/exec" method="POST">
+          <input type="email" name="email" placeholder="you@email.com" required>
+          <input type="text" name="twitter" placeholder="@your_twitter" required>
+          <input type="text" name="wallet" placeholder="0x... EVM wallet address" pattern="^0x[a-fA-F0-9]{40}$" title="Enter a valid EVM address starting with 0x" required>
+          <button type="submit" class="btn btn-primary">Join whitelist</button>
+        </form>
+        <div class="whitelist-note">We'll only use this to contact you about mint access.</div>
+        <div class="whitelist-success" id="whitelistSuccess">You're on the list! Check Discord for updates.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section id="mint">
   <div class="wrap">
     <div class="mint-panel">
       <div>
         <h3>Join the grid</h3>
         <p>Minting is first-come. Your call sign and rarity are revealed the moment your pilot lands in your wallet.</p>
-        <div class="mint-price">Mint price <b>TBD</b> · max per wallet <b>TBD</b></div>
-        <div class="mint-note" id="mintNote">Price and wallet limit are set closer to mint and announced in Discord first.</div>
+        <div class="mint-price">Mint price <b>TBD</b> · max per wallet <b>TBD</b></div><div class="mint-note" id="mintNote">Price and wallet limit are set closer to mint and announced in Discord first.</div>
       </div>
       <div class="mint-cta">
         <button class="btn btn-primary" style="padding:16px 34px;" id="connectWalletBtn">Connect wallet</button>
@@ -504,8 +537,8 @@
       </div>
     </div>
     <div class="community-row">
-      <a class="community-link" href="#"><span class="c-dot" style="background:#7B61FF"></span>Discord</a>
-      <a class="community-link" href="#"><span class="c-dot" style="background:#5CE1FF"></span>X / Twitter</a>
+      <a class="community-link" href="https://discord.gg/44YRrx4JeQ" target="_blank" rel="noopener noreferrer"><span class="c-dot" style="background:#7B61FF"></span>Discord</a>
+      <a class="community-link" href="https://x.com/Void_Runnner" target="_blank" rel="noopener noreferrer"><span class="c-dot" style="background:#5CE1FF"></span>X / Twitter</a>
       <a class="community-link" href="#"><span class="c-dot" style="background:#F4B740"></span>OpenSea</a>
       <a class="community-link" href="docs.html"><span class="c-dot" style="background:#FF6B35"></span>Docs</a>
     </div>
@@ -551,7 +584,7 @@
       const p = PREFIX[Math.floor(Math.random()*PREFIX.length)];
       const s = SUFFIX[Math.floor(Math.random()*SUFFIX.length)];
       const num = String(Math.floor(Math.random()*99)).padStart(2,'0');
-      name = tries < 40 ? `${p} ${s}` : `${p} ${s}-${num}`;
+      name = tries < 40 ? ${p} ${s} : ${p} ${s}-${num};
       tries++;
     } while(usedNames.has(name) && tries < 200);
     usedNames.add(name);
@@ -571,8 +604,7 @@
   }
 
   // ---------- SVG art generation ----------
-  function generateArt(tier, seed){
-    const rand = mulberry32(seed);
+  function generateArt(tier, seed){const rand = mulberry32(seed);
     const colorA = tier.glowA, colorB = tier.glowB;
     const shapes = [];
     const shapeCount = 5 + Math.floor(rand()*3);
@@ -584,14 +616,14 @@
       const opacity = (0.15 + rand()*0.5).toFixed(2);
       const useTri = rand() > 0.5;
       if(useTri){
-        shapes.push(`<polygon points="${cx},${cy-size} ${cx+size},${cy+size} ${cx-size},${cy+size}" fill="url(#g${seed})" opacity="${opacity}" transform="rotate(${rot} ${cx} ${cy})" />`);
+        shapes.push(<polygon points="${cx},${cy-size} ${cx+size},${cy+size} ${cx-size},${cy+size}" fill="url(#g${seed})" opacity="${opacity}" transform="rotate(${rot} ${cx} ${cy})" />);
       } else {
-        shapes.push(`<rect x="${cx-size/2}" y="${cy-size/2}" width="${size}" height="${size}" fill="none" stroke="url(#g${seed})" stroke-width="2" opacity="${opacity}" transform="rotate(${rot} ${cx} ${cy})" />`);
+        shapes.push(<rect x="${cx-size/2}" y="${cy-size/2}" width="${size}" height="${size}" fill="none" stroke="url(#g${seed})" stroke-width="2" opacity="${opacity}" transform="rotate(${rot} ${cx} ${cy})" />);
       }
     }
     // central emblem
     const emblemRot = Math.floor(rand()*360);
-    return `
+    return 
     <svg viewBox="0 0 300 300" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="g${seed}" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -605,7 +637,7 @@
         <polygon points="150,95 205,132 184,195 116,195 95,132" fill="none" stroke="url(#g${seed})" stroke-width="3"/>
         <polygon points="150,120 180,140 168,178 132,178 120,140" fill="url(#g${seed})" opacity="0.55"/>
       </g>
-    </svg>`;
+    </svg>;
   }
 
   function mulberry32(a) {
@@ -632,20 +664,20 @@
   // ---------- Render: rarity list ----------
   const rarityList = document.getElementById('rarityList');
   const maxWeight = Math.max(...TIERS.map(t=>t.weight));
-  rarityList.innerHTML = TIERS.slice().reverse().map(t => `
+  rarityList.innerHTML = TIERS.slice().reverse().map(t => 
     <div class="rarity-row">
       <div class="rarity-name"><span class="rarity-swatch" style="background:${t.color}"></span>${t.label}</div>
       <div class="rarity-bar-track"><div class="rarity-bar-fill" style="width:${(t.weight/maxWeight*100)}%; background:${t.color}"></div></div>
       <div class="rarity-pct" style="color:${t.color}">${t.weight}%</div>
       <div class="rarity-supply">${t.supply.toLocaleString()} pilots</div>
     </div>
-  `).join('');
+  ).join('');
 
   // ---------- Render: feature card ----------
   function renderFeature(){
     const p = makePilot();
     const el = document.getElementById('featureCard');
-    el.innerHTML = `
+    el.innerHTML = 
       <div class="tier-tag" style="color:${p.tier.color}">${p.tier.label.toUpperCase()}</div>
       <div class="feature-art">${p.art}</div>
       <div class="feature-meta">
@@ -657,15 +689,14 @@
         <div><div class="v">${p.stats.armor}</div><div class="k">ARMOR</div></div>
         <div><div class="v">${p.stats.boost}</div><div class="k">BOOST</div></div>
       </div>
-    `;
+    ;
   }
 
   // ---------- Render: gallery ----------
   let batch = 1;
   function renderGallery(){
     const grid = document.getElementById('galleryGrid');
-    const pilots = Array.from({length:12}, makePilot);
-    grid.innerHTML = pilots.map(p => `
+    const pilots = Array.from({length:12}, makePilot);grid.innerHTML = pilots.map(p => 
       <div class="card">
         <div class="card-art">${p.art}</div>
         <div class="card-top">
@@ -681,8 +712,8 @@
           <span>BST <b>${p.stats.boost}</b></span>
         </div>
       </div>
-    `).join('');
-    document.getElementById('batchLabel').textContent = `batch #${batch}`;
+    ).join('');
+    document.getElementById('batchLabel').textContent = batch #${batch};
   }
 
   // ---------- Story art ----------
@@ -701,13 +732,13 @@
   function renderTeam(){
     const grid = document.getElementById('teamGrid');
     if(!grid) return;
-    grid.innerHTML = TEAM.map((m,i) => `
+    grid.innerHTML = TEAM.map((m,i) => 
       <div class="team-card">
         <div class="team-avatar">${generateArt(TIERS[i % TIERS.length], 1000+i)}</div>
         <div class="team-name">${m.name}</div>
         <div class="team-role">${m.role}</div>
       </div>
-    `).join('');
+    ).join('');
   }
 
   // ---------- Wallet connect (not live yet) ----------
@@ -729,6 +760,29 @@
   renderStoryArt();
   renderTeam();
   initWalletButton();
+
+  const whitelistForm = document.getElementById('whitelistForm');
+  const whitelistSuccess = document.getElementById('whitelistSuccess');
+  if (whitelistForm) {
+    whitelistForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = whitelistForm.querySelector('input[name="email"]').value;
+      const twitter = whitelistForm.querySelector('input[name="twitter"]').value;
+      const wallet = whitelistForm.querySelector('input[name="wallet"]').value;
+      try {
+        await fetch(whitelistForm.action, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ email: email, twitter: twitter, wallet: wallet })
+        });
+        whitelistForm.reset();
+        whitelistSuccess.style.display = 'block';
+      } catch (err) {
+        alert('Something went wrong. Please try again.');
+      }
+    });
+  }
 })();
 </script>
 
