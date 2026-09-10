@@ -213,6 +213,9 @@
   .mint-panel p{ color: var(--ink-dim); font-size: 14px; max-width: 420px; }
   .mint-price{ font-family:'IBM Plex Mono'; font-size: 13px; color: var(--ink-dim); margin-top: 14px; }
   .mint-price b{ color: var(--ink); font-size: 15px; }
+  .mint-note{ font-size: 12px; color: var(--ink-dim); margin-top: 8px; max-width: 380px; }
+  .mint-cta{ display:flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+  .wallet-status{ font-family:'IBM Plex Mono'; font-size: 12px; color: var(--ink-dim); max-width: 220px; text-align:right; }
 
   /* STORY */
   .story{ display:grid; grid-template-columns: 0.85fr 1.15fr; gap: 56px; align-items: center; }
@@ -481,9 +484,13 @@
       <div>
         <h3>Join the grid</h3>
         <p>Minting is first-come. Your call sign and rarity are revealed the moment your pilot lands in your wallet.</p>
-        <div class="mint-price">Mint price <b>0.08 ETH</b> · max 3 per wallet</div>
+        <div class="mint-price">Mint price <b>TBD</b> · max per wallet <b>TBD</b></div>
+        <div class="mint-note" id="mintNote">Price and wallet limit are set closer to mint and announced in Discord first.</div>
       </div>
-      <button class="btn btn-primary" style="padding:16px 34px;">Connect wallet</button>
+      <div class="mint-cta">
+        <button class="btn btn-primary" style="padding:16px 34px;" id="connectWalletBtn">Connect wallet</button>
+        <div class="wallet-status" id="walletStatus" hidden></div>
+      </div>
     </div>
   </div>
 </section>
@@ -500,7 +507,7 @@
       <a class="community-link" href="#"><span class="c-dot" style="background:#7B61FF"></span>Discord</a>
       <a class="community-link" href="#"><span class="c-dot" style="background:#5CE1FF"></span>X / Twitter</a>
       <a class="community-link" href="#"><span class="c-dot" style="background:#F4B740"></span>OpenSea</a>
-      <a class="community-link" href="#"><span class="c-dot" style="background:#FF6B35"></span>Docs</a>
+      <a class="community-link" href="docs.html"><span class="c-dot" style="background:#FF6B35"></span>Docs</a>
     </div>
   </div>
 </section>
@@ -703,6 +710,17 @@
     `).join('');
   }
 
+  // ---------- Wallet connect (not live yet) ----------
+  function initWalletButton(){
+    const btn = document.getElementById('connectWalletBtn');
+    const status = document.getElementById('walletStatus');
+    if(!btn || !status) return;
+    btn.addEventListener('click', () => {
+      status.hidden = false;
+      status.textContent = 'Wallet connect isn\'t live yet — see Docs for what\'s confirmed so far.';
+    });
+  }
+
   document.getElementById('revealBtn').addEventListener('click', renderFeature);
   document.getElementById('revealMore').addEventListener('click', () => { batch++; renderGallery(); });
 
@@ -710,6 +728,7 @@
   renderGallery();
   renderStoryArt();
   renderTeam();
+  initWalletButton();
 })();
 </script>
 
