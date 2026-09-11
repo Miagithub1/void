@@ -763,9 +763,10 @@
   }
 
   // ---------- Whitelist join + checker ----------
-  // Submissions post to Formspree (free tier is enough): create a form at
-  // https://formspree.io, then replace the ID below with your real one.
-  const WHITELIST_FORM_ENDPOINT = "https://formspree.io/f/mvkodylj";
+  // Submissions post to a Google Apps Script Web App tied to a Google Sheet.
+  // See whitelist-apps-script.gs for the script + deploy steps. Paste your
+  // deployment's /exec URL below.
+  const WHITELIST_FORM_ENDPOINT = "https://script.google.com/macros/s/AKfycbx3BID3BJEwRQTburt0Z-QNqX4KiJ1Bg2JRsSZBXzhO6DbSciS7b4WL1hHMh9-DHogLIA/exec";
 
   const EVM_ADDRESS_RE = /^0x[a-fA-F0-9]{40}$/;
   const TWITTER_RE = /^@?[A-Za-z0-9_]{1,15}$/;
@@ -793,26 +794,27 @@
         setStatus(status, "Enter a valid X username (letters, numbers, underscore, max 15 characters).", 'err');
         return;
       }
-      if(WHITELIST_FORM_ENDPOINT.includes('REPLACE_WITH_YOUR_FORM_ID')){
-        setStatus(status, "Whitelist form isn't connected yet — see Docs to wire it up.", 'err');
+      if(WHITELIST_FORM_ENDPOINT.includes('REPLACE_WITH_YOUR_DEPLOYMENT_ID')){
+        setStatus(status, "Whitelist sheet isn't connected yet — see Docs to wire it up.", 'err');
         return;
       }
 
       setStatus(status, 'Submitting...', 'pending');
       try{
-        const res = await fetch(WHITELIST_FORM_ENDPOINT, {
+        // Apps Script web apps don't send CORS headers, so the browser can't
+        // read the response — mode: 'no-cors' avoids that error. We can't
+        // check res.ok here, so a submission that doesn't throw is treated
+        // as successful. Open the sheet directly to confirm rows are landing.
+        await fetch(WHITELIST_FORM_ENDPOINT, {
           method: 'POST',
-          headers: { 'Accept': 'application/json' },
-          body: new FormData(form)
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ address, twitter })
         });
-        if(res.ok){
-          setStatus(status, "You're in — confirmations get posted in Discord before mint.", 'ok');
-          form.reset();
-        } else {
-          setStatus(status, 'Submission failed — try again in a moment.', 'err');
-        }
+        setStatus(status, "You're in — confirmations get posted in Discord before mint.", 'ok');
+        form.reset();
       } catch(err){
-        setStatus(status, "Couldn't reach the form — check your connection and try again.", 'err');
+        setStatus(status, "Couldn't reach the sheet — check your connection and try again.", 'err');
       }
     });
   }
