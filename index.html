@@ -92,22 +92,6 @@
   }
   #backToTop.visible{ opacity: 1; pointer-events: auto; transform: translateY(0); }
 
-  /* CUSTOM CURSOR */
-  @media (hover: hover){
-    body{ cursor: none; }
-    a, button, .card, .team-card, input, .faq-item summary{ cursor: none; }
-  }
-  .custom-cursor{
-    position: fixed; top: 0; left: 0; width: 22px; height: 22px; border-radius: 50%;
-    border: 1.5px solid var(--epic); pointer-events: none; z-index: 9998;
-    transform: translate(-50%, -50%); transition: width 0.2s ease, height 0.2s ease, background 0.2s ease, border-color 0.2s ease;
-    mix-blend-mode: difference;
-  }
-  .custom-cursor.hover{
-    width: 44px; height: 44px; background: rgba(255,92,170,0.15); border-color: var(--mythic-a);
-  }
-  .custom-cursor.hidden{ opacity: 0; }
-
   body{
     background: var(--bg);
     color: var(--ink);
@@ -648,13 +632,11 @@
 
 <button id="soundToggle" class="fx-btn" aria-label="Toggle sound" title="Toggle sound">🔇</button>
 <button id="backToTop" class="fx-btn" aria-label="Back to top" title="Back to top">↑</button>
-<div id="customCursor" class="custom-cursor"></div>
 
 <nav>
   <div class="wrap">
     <div class="brand"><span class="mark"></span><span class="glitch-text" data-text="VOID RUNNERS">VOID RUNNERS</span><button class="early-access-btn wl-trigger">Early Access</button></div>
     <div class="navlinks">
-      <a href="#whitelist" class="nav-highlight wl-trigger">Whitelist</a>
       <a href="#story">Story</a>
       <a href="#rarity">Rarity</a>
       <a href="#gallery">Collection</a>
@@ -670,7 +652,6 @@
     </button>
   </div>
   <div class="mobile-menu" id="mobileMenu">
-    <a href="#whitelist" class="nav-highlight wl-trigger">Whitelist</a>
     <a href="#story">Story</a>
     <a href="#rarity">Rarity</a>
     <a href="#gallery">Collection</a>
@@ -1011,7 +992,7 @@
 <footer>
   <div class="wrap">
     <span>Void Runners</span>
-    <span>Generated collection preview — no real contract connected</span>
+    <span>Anti-grav racing league · 10,000 pilots</span>
   </div>
   <div class="wrap footer-legal">
     <p>NFTs are digital collectibles and carry no guarantee of financial return. Availability, pricing, and utility are subject to change and announced through official channels only. Nothing on this site is financial advice.</p>
@@ -1542,31 +1523,6 @@
     });
   }
 
-  // ---------- Custom cursor ----------
-  function initCustomCursor(){
-    if(!window.matchMedia('(hover: hover)').matches) return;
-    const cursor = document.getElementById('customCursor');
-    if(!cursor) return;
-    let cx = 0, cy = 0, tx = 0, ty = 0;
-    window.addEventListener('mousemove', (e) => { tx = e.clientX; ty = e.clientY; cursor.classList.remove('hidden'); });
-    document.addEventListener('mouseleave', () => cursor.classList.add('hidden'));
-    function raf(){
-      cx += (tx - cx) * 0.25;
-      cy += (ty - cy) * 0.25;
-      cursor.style.left = cx + 'px';
-      cursor.style.top = cy + 'px';
-      requestAnimationFrame(raf);
-    }
-    raf();
-    const hoverSelector = 'a, button, .card, .team-card, input, .faq-item summary';
-    document.addEventListener('mouseover', (e) => {
-      if(e.target.closest(hoverSelector)) cursor.classList.add('hover');
-    });
-    document.addEventListener('mouseout', (e) => {
-      if(e.target.closest(hoverSelector)) cursor.classList.remove('hover');
-    });
-  }
-
   // ---------- Loading intro ----------
   function initLoadingIntro(){
     const el = document.getElementById('loadingIntro');
@@ -1954,7 +1910,6 @@
   initFaqAccordion();
   init3DTilt();
   initTierChecker();
-  initCustomCursor();
   initMagneticButtons();
   initScrollParallax();
 })();
