@@ -228,12 +228,12 @@
   }
   .kicker .dot{ width:6px; height:6px; background: var(--rare); border-radius:50%; }
   .hero h1{
-    font-size: 56px; font-weight: 700; line-height: 1.03;
+    font-size: 58px; font-weight: 700; line-height: 1.02; letter-spacing: -0.02em;
     max-width: 560px;
   }
   .hero h1 em{ font-style: normal; color: var(--ink-dim); }
   .hero p.lead{
-    margin-top: 22px; font-size: 17px; color: var(--ink-dim);
+    margin-top: 24px; font-size: 17px; color: var(--ink-dim); line-height: 1.7;
     max-width: 460px;
   }
   .hero-cta{ display:flex; gap: 14px; margin-top: 34px; flex-wrap: wrap; }
@@ -241,13 +241,19 @@
     font-family:'Space Grotesk'; font-weight: 600; font-size: 14px;
     padding: 14px 26px; border-radius: var(--radius);
     border: 1px solid transparent; cursor: pointer;
-    transition: transform .15s ease, background .15s ease, border-color .15s ease;
+    transition: transform .15s ease, background .15s ease, border-color .15s ease, box-shadow .2s ease;
   }
   .btn:active{ transform: scale(0.97); }
-  .btn-primary{ background: var(--ink); color: var(--bg); }
-  .btn-primary:hover{ background: #fff; }
-  .btn-ghost{ background: transparent; color: var(--ink); border-color: var(--panel-line); }
-  .btn-ghost:hover{ border-color: var(--ink-dim); }
+  .btn-primary{
+    background: var(--ink); color: var(--bg);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 8px 24px -6px rgba(237,239,244,0.25);
+  }
+  .btn-primary:hover{ background: #fff; box-shadow: 0 0 0 1px rgba(255,255,255,0.1), 0 10px 30px -6px rgba(237,239,244,0.4); transform: translateY(-1px); }
+  .btn-ghost{
+    background: rgba(19,26,40,0.5); color: var(--ink); border-color: var(--panel-line);
+    backdrop-filter: blur(6px);
+  }
+  .btn-ghost:hover{ border-color: var(--epic); box-shadow: 0 0 0 1px rgba(123,97,255,0.3), 0 8px 24px -8px rgba(123,97,255,0.35); transform: translateY(-1px); }
 
   .hero-stats{ display:flex; gap: 34px; margin-top: 44px; }
   .hero-stats div{ }
@@ -436,6 +442,62 @@
   .lb-tier{ font-size: 11px; font-family:'IBM Plex Mono'; }
   .lb-total{ font-family:'IBM Plex Mono'; font-size: 14px; font-weight:600; width: 70px; text-align:right; }
 
+  /* GAME */
+  .game-panel{
+    background: var(--panel); border: 1px solid var(--panel-line); border-radius: var(--radius);
+    padding: 20px;
+  }
+  .game-pilot-bar{
+    display:flex; align-items:center; gap: 20px; flex-wrap: wrap;
+    padding-bottom: 16px; margin-bottom: 16px; border-bottom: 1px solid var(--panel-line);
+  }
+  .game-pilot-info{ min-width: 140px; }
+  .game-pilot-name{ font-family:'Space Grotesk'; font-weight:700; font-size: 15px; }
+  .game-pilot-tier{ font-size: 11px; color: var(--ink-dim); margin-top: 2px; }
+  .game-pilot-stats{ display:flex; gap: 16px; font-family:'IBM Plex Mono'; font-size: 12px; }
+  .game-pilot-stats .k{ color: var(--ink-dim); margin-right: 4px; }
+  .game-pilot-stats .v{ color: var(--ink); font-weight: 600; }
+  .game-pilot-bar .btn{ margin-left: auto; padding: 10px 18px; font-size: 12px; }
+
+  .game-canvas-wrap{
+    position: relative; width: 100%; max-width: 420px; aspect-ratio: 2 / 3;
+    margin: 0 auto; background: #060a12; border-radius: 8px; overflow: hidden;
+    border: 1px solid var(--panel-line);
+  }
+  #gameCanvas{ display:block; width: 100%; height: 100%; }
+  .game-overlay{
+    position: absolute; inset: 0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding: 24px; background: rgba(6,10,18,0.86); backdrop-filter: blur(3px);
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+  }
+  .game-overlay.hidden{ opacity: 0; visibility: hidden; pointer-events: none; }
+  .game-overlay-title{ font-family:'Space Grotesk'; font-weight:700; font-size: 20px; margin-bottom: 8px; }
+  .game-overlay-sub{ font-size: 13px; color: var(--ink-dim); max-width: 260px; margin-bottom: 18px; }
+  .game-hud{
+    position: absolute; top: 10px; left: 10px; right: 10px; display:flex; justify-content:space-between;
+    font-family:'IBM Plex Mono'; font-size: 12px; pointer-events: none;
+  }
+  .game-hud-item{ background: rgba(11,15,25,0.7); padding: 4px 10px; border-radius: 6px; }
+  .game-hud-item .k{ color: var(--ink-dim); margin-right: 6px; }
+  .game-hud-item .v{ color: var(--ink); font-weight: 600; }
+  .game-lives{ display:flex; gap: 4px; align-items:center; }
+  .game-life-dot{ width: 7px; height: 7px; border-radius: 50%; background: var(--rare); }
+  .game-life-dot.lost{ background: #2a3346; }
+
+  .game-controls{ display:flex; gap: 12px; justify-content:center; margin-top: 18px; }
+  .game-btn{
+    font-family:'Space Grotesk'; font-weight: 700; font-size: 15px;
+    background: var(--panel); border: 1px solid var(--panel-line); color: var(--ink);
+    border-radius: 10px; width: 56px; height: 56px; cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+  }
+  .game-btn:active{ transform: scale(0.94); }
+  .game-boost-btn{
+    width: auto; padding: 0 20px; font-size: 12px; color: var(--legendary); border-color: var(--legendary);
+  }
+  .game-boost-btn:disabled{ opacity: 0.35; cursor: default; }
+  .game-note{ font-size: 11px; color: var(--ink-dim); text-align:center; margin-top: 14px; }
+
   /* STORY */
   .story{ display:grid; grid-template-columns: 0.85fr 1.15fr; gap: 56px; align-items: center; }
   .story-art{ aspect-ratio: 1/1; border-radius: var(--radius); border: 1px solid var(--panel-line); overflow:hidden; background:#0E1420; }
@@ -573,7 +635,7 @@
   .wl-input{ background:#0E1420; border: 1px solid var(--panel-line); border-radius: 2px; padding: 12px 14px; color: var(--ink); font-family:'IBM Plex Mono'; font-size: 13px; width: 100%; }
   .wl-input:focus{ outline: none; border-color: var(--ink-dim); }
   .wl-status{ margin-top: 14px; font-family:'IBM Plex Mono'; font-size: 12.5px; min-height: 16px; line-height: 1.5; }
-  .wl-status.ok{ color: var(--rare); }
+  .wl-status.ok{ color: #2ECC71; }
   .wl-status.err{ color: #FF7A7A; }
   .wl-status.pending{ color: var(--ink-dim); }
 
@@ -641,6 +703,7 @@
       <a href="#rarity">Rarity</a>
       <a href="#gallery">Collection</a>
       <a href="#leaderboard">Leaderboard</a>
+      <a href="#game">Play</a>
       <a href="#utility">Utility</a>
       <a href="#roadmap">Roadmap</a>
       <a href="#faq">FAQ</a>
@@ -656,6 +719,7 @@
     <a href="#rarity">Rarity</a>
     <a href="#gallery">Collection</a>
       <a href="#leaderboard">Leaderboard</a>
+      <a href="#game">Play</a>
     <a href="#utility">Utility</a>
     <a href="#roadmap">Roadmap</a>
     <a href="#faq">FAQ</a>
@@ -688,7 +752,7 @@
 
 <div class="wl-modal" id="wlModal">
   <div class="wl-modal-backdrop" id="wlModalBackdrop"></div>
-  <div class="wl-modal-panel">
+  <div class="wl-modal-panel" id="whitelist">
     <button class="wl-modal-close" id="wlModalClose" aria-label="Close">&times;</button>
     <div class="section-head">
       <div>
@@ -704,18 +768,6 @@
         <div class="wl-step">
           <div class="wl-step-num">1</div>
           <div class="wl-step-body">
-            <div class="wl-step-title">Your X handle &amp; wallet</div>
-            <p class="wl-step-desc">This is where we'll send your whitelist confirmation.</p>
-            <label class="wl-label" for="wlTwitter">X (Twitter) username</label>
-            <input class="wl-input" id="wlTwitter" name="twitter" type="text" placeholder="@yourhandle" autocomplete="off" required>
-            <label class="wl-label" for="wlAddress" style="margin-top:10px;">EVM wallet address</label>
-            <input class="wl-input" id="wlAddress" name="address" type="text" placeholder="0x..." autocomplete="off" required>
-          </div>
-        </div>
-
-        <div class="wl-step">
-          <div class="wl-step-num">2</div>
-          <div class="wl-step-body">
             <div class="wl-step-title">Follow us on X</div>
             <p class="wl-step-desc">Stay updated on mint dates and announcements.</p>
             <label class="wl-check">
@@ -726,14 +778,26 @@
         </div>
 
         <div class="wl-step">
-          <div class="wl-step-num">3</div>
+          <div class="wl-step-num">2</div>
           <div class="wl-step-body">
             <div class="wl-step-title">Join Discord</div>
             <p class="wl-step-desc">Join the official server to connect with early supporters.</p>
             <label class="wl-check">
               <input type="checkbox" id="wlStepDiscord" required>
-              Joined our <a href="https://discord.gg/44YRrx4JeQ" target="_blank" rel="noopener">Discord server</a>
+              Joined our <a href="https://discord.gg/Vz7uY2WTv3" target="_blank" rel="noopener">Discord server</a>
             </label>
+          </div>
+        </div>
+
+        <div class="wl-step">
+          <div class="wl-step-num">3</div>
+          <div class="wl-step-body">
+            <div class="wl-step-title">Your X handle &amp; wallet</div>
+            <p class="wl-step-desc">This is where we'll send your whitelist confirmation.</p>
+            <label class="wl-label" for="wlTwitter">X (Twitter) username</label>
+            <input class="wl-input" id="wlTwitter" name="twitter" type="text" placeholder="@yourhandle" autocomplete="off" required>
+            <label class="wl-label" for="wlAddress" style="margin-top:10px;">EVM wallet address</label>
+            <input class="wl-input" id="wlAddress" name="address" type="text" placeholder="0x..." autocomplete="off" required>
           </div>
         </div>
 
@@ -825,6 +889,53 @@
       <div class="mono" style="color:var(--ink-dim); font-size:13px;">preview</div>
     </div>
     <div class="leaderboard-list" id="leaderboardList"></div>
+  </div>
+</section>
+
+<section id="game">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <h2>Play the grid</h2>
+        <p>A quick taste of the racing loop. Your pilot's stats set the pace — try a few tiers and feel the difference.</p>
+      </div>
+    </div>
+
+    <div class="game-panel">
+      <div class="game-pilot-bar">
+        <div class="game-pilot-info">
+          <div class="game-pilot-name" id="gamePilotName">—</div>
+          <div class="game-pilot-tier mono" id="gamePilotTier">—</div>
+        </div>
+        <div class="game-pilot-stats">
+          <div><span class="k">SPD</span><span class="v" id="gameStatSpeed">—</span></div>
+          <div><span class="k">ARM</span><span class="v" id="gameStatArmor">—</span></div>
+          <div><span class="k">BST</span><span class="v" id="gameStatBoost">—</span></div>
+        </div>
+        <button class="btn btn-ghost" id="gameNewPilotBtn" type="button">New pilot</button>
+      </div>
+
+      <div class="game-canvas-wrap">
+        <canvas id="gameCanvas"></canvas>
+        <div class="game-overlay" id="gameOverlay">
+          <div class="game-overlay-title" id="gameOverlayTitle">Ready to run</div>
+          <p class="game-overlay-sub" id="gameOverlaySub">Dodge the wreckage. Tap boost for a burst of speed.</p>
+          <button class="btn btn-primary" id="gameStartBtn" type="button">Start run</button>
+        </div>
+        <div class="game-hud">
+          <div class="game-hud-item"><span class="k">Score</span><span class="v mono" id="gameScore">0</span></div>
+          <div class="game-hud-item"><span class="k">Best</span><span class="v mono" id="gameBest">0</span></div>
+          <div class="game-hud-item game-lives" id="gameLives"></div>
+        </div>
+      </div>
+
+      <div class="game-controls">
+        <button class="game-btn" id="gameLeftBtn" type="button" aria-label="Move left">&larr;</button>
+        <button class="game-btn game-boost-btn" id="gameBoostBtn" type="button" aria-label="Boost">BOOST</button>
+        <button class="game-btn" id="gameRightBtn" type="button" aria-label="Move right">&rarr;</button>
+      </div>
+      <p class="game-note">Arrow keys or A/D to steer, Space to boost on desktop. This is a standalone browser demo — no wallet or on-chain data is used.</p>
+    </div>
   </div>
 </section>
 
@@ -981,7 +1092,7 @@
     </div>
     <div class="community-row">
       <!-- Replace href="#" on Discord and X with your real invite/profile links -->
-      <a class="community-link" href="https://discord.gg/44YRrx4JeQ" target="_blank" rel="noopener"><span class="c-dot" style="background:#7B61FF"></span>Discord<span class="c-count mono" id="discordCount"></span></a>
+      <a class="community-link" href="https://discord.gg/Vz7uY2WTv3" target="_blank" rel="noopener"><span class="c-dot" style="background:#7B61FF"></span>Discord<span class="c-count mono" id="discordCount"></span></a>
       <a class="community-link" href="https://x.com/Void_Runnner" target="_blank" rel="noopener"><span class="c-dot" style="background:#5CE1FF"></span>X / Twitter</a>
       <a class="community-link" href="#" target="_blank" rel="noopener"><span class="c-dot" style="background:#F4B740"></span>OpenSea</a>
       <a class="community-link" href="docs.html"><span class="c-dot" style="background:#FF6B35"></span>Docs</a>
@@ -1241,6 +1352,235 @@
     }).join('');
   }
 
+  // ---------- Grid Run mini-game ----------
+  function initGridRunGame(){
+    const canvas = document.getElementById('gameCanvas');
+    if(!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const overlay = document.getElementById('gameOverlay');
+    const overlayTitle = document.getElementById('gameOverlayTitle');
+    const overlaySub = document.getElementById('gameOverlaySub');
+    const startBtn = document.getElementById('gameStartBtn');
+    const newPilotBtn = document.getElementById('gameNewPilotBtn');
+    const leftBtn = document.getElementById('gameLeftBtn');
+    const rightBtn = document.getElementById('gameRightBtn');
+    const boostBtn = document.getElementById('gameBoostBtn');
+    const scoreEl = document.getElementById('gameScore');
+    const bestEl = document.getElementById('gameBest');
+    const livesEl = document.getElementById('gameLives');
+    const nameEl = document.getElementById('gamePilotName');
+    const tierEl = document.getElementById('gamePilotTier');
+    const spdEl = document.getElementById('gameStatSpeed');
+    const armEl = document.getElementById('gameStatArmor');
+    const bstEl = document.getElementById('gameStatBoost');
+
+    let pilot = null;
+    let W = 0, H = 0, LANES = 3, laneW = 0;
+    let lane = 1, targetX = 0, playerX = 0;
+    let obstacles = [];
+    let running = false;
+    let score = 0;
+    let lives = 3;
+    let speed = 4;
+    let spawnTimer = 0;
+    let boostMeter = 100;
+    let boosting = false;
+    let rafId = null;
+
+    const BEST_KEY = 'voidRunnersGridRunBest';
+    function getBest(){ try{ return parseInt(localStorage.getItem(BEST_KEY) || '0', 10); }catch(e){ return 0; } }
+    function setBest(v){ try{ localStorage.setItem(BEST_KEY, String(v)); }catch(e){} }
+
+    function resize(){
+      const rect = canvas.parentElement.getBoundingClientRect();
+      W = canvas.width = rect.width;
+      H = canvas.height = rect.height;
+      laneW = W / LANES;
+      targetX = laneW * lane + laneW/2;
+      playerX = targetX;
+    }
+    window.addEventListener('resize', resize);
+
+    function setPilot(p){
+      pilot = p;
+      nameEl.textContent = p.name;
+      tierEl.textContent = p.tier.label;
+      tierEl.style.color = p.tier.color;
+      spdEl.textContent = p.stats.speed;
+      armEl.textContent = p.stats.armor;
+      bstEl.textContent = p.stats.boost;
+    }
+
+    function renderLives(){
+      livesEl.innerHTML = Array.from({length: 3}, (_, i) =>
+        `<span class="game-life-dot${i < lives ? '' : ' lost'}"></span>`
+      ).join('');
+    }
+
+    function reset(){
+      lane = 1;
+      resize();
+      obstacles = [];
+      score = 0;
+      // Armor gives extra durability: 80+ armor = 4 lives, else 3
+      lives = pilot && pilot.stats.armor >= 80 ? 4 : 3;
+      // Speed stat sets base scroll speed
+      speed = 3 + ((pilot ? pilot.stats.speed : 50) / 100) * 3.5;
+      boostMeter = 100;
+      boosting = false;
+      spawnTimer = 0;
+      scoreEl.textContent = '0';
+      bestEl.textContent = getBest();
+      renderLives();
+      boostBtn.disabled = false;
+    }
+
+    function spawnObstacle(){
+      const l = Math.floor(Math.random() * LANES);
+      obstacles.push({ lane: l, y: -40, hit: false });
+    }
+
+    function endRun(){
+      running = false;
+      cancelAnimationFrame(rafId);
+      const best = getBest();
+      if(score > best) setBest(score);
+      overlayTitle.textContent = 'Run ended';
+      overlaySub.textContent = `Score ${score} — ${score > best ? 'new best!' : 'best is ' + Math.max(score, best)}`;
+      startBtn.textContent = 'Run again';
+      overlay.classList.remove('hidden');
+      bestEl.textContent = getBest();
+    }
+
+    function step(){
+      if(!running) return;
+      ctx.clearRect(0, 0, W, H);
+
+      // Track background
+      ctx.fillStyle = '#060a12';
+      ctx.fillRect(0, 0, W, H);
+      ctx.strokeStyle = 'rgba(92,225,255,0.12)';
+      ctx.lineWidth = 1;
+      for(let i = 1; i < LANES; i++){
+        ctx.beginPath();
+        ctx.moveTo(laneW * i, 0);
+        ctx.lineTo(laneW * i, H);
+        ctx.stroke();
+      }
+
+      const curSpeed = speed * (boosting ? 1.8 : 1);
+
+      // Move player toward target lane
+      targetX = laneW * lane + laneW/2;
+      playerX += (targetX - playerX) * 0.25;
+
+      // Spawn obstacles
+      spawnTimer -= curSpeed;
+      if(spawnTimer <= 0){
+        spawnObstacle();
+        spawnTimer = 55 - Math.min(25, curSpeed * 3);
+      }
+
+      // Update + draw obstacles
+      const playerY = H - 70;
+      const playerSize = 26;
+      for(let i = obstacles.length - 1; i >= 0; i--){
+        const o = obstacles[i];
+        o.y += curSpeed;
+        const ox = laneW * o.lane + laneW/2;
+        ctx.fillStyle = '#FF6B35';
+        ctx.beginPath();
+        ctx.roundRect ? ctx.roundRect(ox - 18, o.y - 12, 36, 24, 5) : ctx.rect(ox - 18, o.y - 12, 36, 24);
+        ctx.fill();
+
+        if(!o.hit && o.lane === lane && Math.abs(o.y - playerY) < 26){
+          o.hit = true;
+          lives -= 1;
+          renderLives();
+          if(lives <= 0){
+            drawPlayer(playerX, playerY, playerSize);
+            endRun();
+            return;
+          }
+        }
+        if(o.y > H + 40) obstacles.splice(i, 1);
+      }
+
+      drawPlayer(playerX, playerY, playerSize);
+
+      // Boost meter regen / drain
+      if(boosting){
+        boostMeter -= 1.4;
+        if(boostMeter <= 0){ boosting = false; boostMeter = 0; }
+      } else if(boostMeter < 100){
+        boostMeter += 0.3;
+      }
+      boostBtn.style.opacity = boostMeter > 15 ? '1' : '0.4';
+
+      score += Math.round(curSpeed / 2);
+      scoreEl.textContent = score;
+
+      rafId = requestAnimationFrame(step);
+    }
+
+    function drawPlayer(x, y, size){
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.fillStyle = boosting ? '#F4B740' : (pilot ? pilot.tier.color : '#EDEFF4');
+      ctx.beginPath();
+      ctx.moveTo(0, -size);
+      ctx.lineTo(size*0.8, size*0.7);
+      ctx.lineTo(0, size*0.4);
+      ctx.lineTo(-size*0.8, size*0.7);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function start(){
+      reset();
+      running = true;
+      overlay.classList.add('hidden');
+      rafId = requestAnimationFrame(step);
+    }
+
+    function moveLeft(){ lane = Math.max(0, lane - 1); }
+    function moveRight(){ lane = Math.min(LANES - 1, lane + 1); }
+    function tryBoost(){
+      if(!running) return;
+      const boostStat = pilot ? pilot.stats.boost : 50;
+      if(boostMeter > 15 && boostStat >= 30) boosting = true;
+    }
+
+    startBtn.addEventListener('click', start);
+    newPilotBtn.addEventListener('click', () => {
+      setPilot(makePilot());
+      if(!running){
+        overlayTitle.textContent = 'Ready to run';
+        overlaySub.textContent = 'Dodge the wreckage. Tap boost for a burst of speed.';
+        startBtn.textContent = 'Start run';
+      }
+    });
+    leftBtn.addEventListener('click', moveLeft);
+    rightBtn.addEventListener('click', moveRight);
+    boostBtn.addEventListener('mousedown', tryBoost);
+    boostBtn.addEventListener('touchstart', (e) => { e.preventDefault(); tryBoost(); });
+    window.addEventListener('mouseup', () => { boosting = false; });
+    window.addEventListener('touchend', () => { boosting = false; });
+
+    document.addEventListener('keydown', (e) => {
+      if(!document.getElementById('game')) return;
+      if(e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') moveLeft();
+      if(e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') moveRight();
+      if(e.key === ' '){ e.preventDefault(); tryBoost(); }
+    });
+    document.addEventListener('keyup', (e) => { if(e.key === ' ') boosting = false; });
+
+    setPilot(makePilot());
+    resize();
+    bestEl.textContent = getBest();
+  }
+
   // ---------- Story art ----------
   function renderStoryArt(){
     const el = document.getElementById('storyArt');
@@ -1276,8 +1616,8 @@
   const EVM_ADDRESS_RE = /^0x[a-fA-F0-9]{40}$/;
   const TWITTER_RE = /^@?[A-Za-z0-9_]{1,15}$/;
 
-  function setStatus(el, text, kind){
-    el.textContent = text;
+  function setStatus(el, text, kind, isHtml){
+    if(isHtml) el.innerHTML = text; else el.textContent = text;
     el.className = 'wl-status' + (kind ? ' ' + kind : '');
   }
 
@@ -1326,7 +1666,7 @@
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify({ address, twitter })
         });
-        setStatus(status, "✓ Success! Confirmations get posted in Discord before mint.", 'ok');
+        setStatus(status, "<b style=\"color:#2ECC71;\">You're In!</b> Confirmations get posted in Discord before mint.", 'ok', true);
         form.reset();
         if(stepSocial) stepSocial.checked = false;
         if(stepDiscord) stepDiscord.checked = false;
@@ -1406,19 +1746,30 @@
       if(e) e.preventDefault();
       modal.classList.add('open');
       document.body.style.overflow = 'hidden';
+      if(location.hash !== '#whitelist') history.pushState(null, '', '#whitelist');
     }
-    function closeModal(){
+    function closeModal(skipHash){
       modal.classList.remove('open');
       document.body.style.overflow = '';
+      if(!skipHash && location.hash === '#whitelist'){
+        history.pushState(null, '', location.pathname + location.search);
+      }
     }
 
     if(banner) banner.addEventListener('click', openModal);
     triggers.forEach(t => t.addEventListener('click', openModal));
-    if(closeBtn) closeBtn.addEventListener('click', closeModal);
-    if(backdrop) backdrop.addEventListener('click', closeModal);
+    if(closeBtn) closeBtn.addEventListener('click', () => closeModal());
+    if(backdrop) backdrop.addEventListener('click', () => closeModal());
     document.addEventListener('keydown', (e) => {
       if(e.key === 'Escape') closeModal();
     });
+    window.addEventListener('popstate', () => {
+      if(location.hash === '#whitelist') openModal();
+      else closeModal(true);
+    });
+
+    // Auto-open if the page is loaded directly with #whitelist in the URL
+    if(location.hash === '#whitelist') openModal();
   }
 
   // ---------- Mobile nav toggle ----------
@@ -1560,19 +1911,20 @@
     scene.add(grid);
 
     // Pilot pod: low-poly icosahedron core + wireframe shell + ring
+    const isMobile = w < 760;
     const podGroup = new THREE.Group();
-    const coreGeo = new THREE.IcosahedronGeometry(0.9, 0);
-    const coreMat = new THREE.MeshBasicMaterial({ color: 0x7B61FF, wireframe: false, transparent: true, opacity: 0.18 });
+    const coreGeo = new THREE.IcosahedronGeometry(0.9, 1);
+    const coreMat = new THREE.MeshBasicMaterial({ color: 0x7B61FF, wireframe: false, transparent: true, opacity: 0.16 });
     const core = new THREE.Mesh(coreGeo, coreMat);
     podGroup.add(core);
 
-    const wireGeo = new THREE.IcosahedronGeometry(0.95, 0);
-    const wireMat = new THREE.MeshBasicMaterial({ color: 0xFF5CAA, wireframe: true, transparent: true, opacity: 0.55 });
+    const wireGeo = new THREE.IcosahedronGeometry(0.95, 1);
+    const wireMat = new THREE.MeshBasicMaterial({ color: 0xFF5CAA, wireframe: true, transparent: true, opacity: 0.5 });
     const wire = new THREE.Mesh(wireGeo, wireMat);
     podGroup.add(wire);
 
-    const ringGeo = new THREE.TorusGeometry(1.5, 0.02, 8, 64);
-    const ringMat = new THREE.MeshBasicMaterial({ color: 0x5CE1FF, transparent: true, opacity: 0.5 });
+    const ringGeo = new THREE.TorusGeometry(1.5, 0.015, 8, 64);
+    const ringMat = new THREE.MeshBasicMaterial({ color: 0x5CE1FF, transparent: true, opacity: 0.45 });
     const ring1 = new THREE.Mesh(ringGeo, ringMat);
     ring1.rotation.x = Math.PI / 2.4;
     const ring2 = new THREE.Mesh(ringGeo, ringMat.clone());
@@ -1580,7 +1932,9 @@
     ring2.rotation.y = Math.PI / 3;
     podGroup.add(ring1, ring2);
 
-    podGroup.position.set(1.6, 0.6, 0);
+    const podScale = isMobile ? 0.62 : 1;
+    podGroup.scale.setScalar(podScale);
+    podGroup.position.set(isMobile ? 0 : 1.6, isMobile ? 2.3 : 0.6, isMobile ? -1.5 : 0);
     scene.add(podGroup);
 
     // Ambient particles
