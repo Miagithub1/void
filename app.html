@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>App — Void Runners</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon points='50,5 95,35 80,95 20,95 5,35' fill='%237B61FF'/%3E%3C/svg%3E">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
+  :root{
+    --bg: #0B0F19;
+    --panel: #131A28;
+    --panel-line: #1E2A3E;
+    --ink: #EDEFF4;
+    --ink-dim: #8A93A6;
+    --rare: #FF6B35;
+    --epic: #7B61FF;
+    --legendary: #F4B740;
+    --mythic: #FF5CAA;
+    --common: #9AA4B5;
+    --cyan: #5CE1FF;
+    --radius: 12px;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{
+    background: var(--bg); color: var(--ink); font-family:'Inter',sans-serif;
+    display:flex; min-height:100vh;
+  }
+  .mono{ font-family:'IBM Plex Mono',monospace; }
+  a{ color:inherit; text-decoration:none; }
+
+  /* SIDEBAR */
+  .sidebar{
+    width: 240px; flex-shrink:0; background: var(--panel); border-right:1px solid var(--panel-line);
+    display:flex; flex-direction:column; padding: 22px 16px; position: sticky; top:0; height:100vh;
+  }
+  .brand{ display:flex; align-items:center; gap:10px; padding: 0 8px 26px; font-family:'Space Grotesk'; font-weight:700; font-size:16px; }
+  .brand .mark{ width:20px; height:20px; background:linear-gradient(135deg,var(--mythic),var(--epic)); clip-path:polygon(50% 0%,100% 38%,80% 100%,20% 100%,0% 38%); }
+  .navmenu{ display:flex; flex-direction:column; gap:4px; }
+  .navmenu a{
+    display:flex; align-items:center; gap:10px; padding:11px 12px; border-radius:8px;
+    font-size:14px; color:var(--ink-dim); transition:background .15s, color .15s;
+  }
+  .navmenu a:hover{ background:#1a2232; color:var(--ink); }
+  .navmenu a.active{ background:#1a2232; color:var(--ink); box-shadow: inset 2px 0 0 var(--epic); }
+  .navmenu .ic{ width:16px; text-align:center; opacity:.8; }
+  .sidebar-foot{ margin-top:auto; padding-top:14px; border-top:1px solid var(--panel-line); }
+  .back-link{ font-size:13px; color:var(--ink-dim); display:flex; align-items:center; gap:6px; padding:8px; }
+  .back-link:hover{ color:var(--ink); }
+
+  /* TOPBAR */
+  .main{ flex:1; min-width:0; }
+  .topbar{
+    display:flex; justify-content:flex-end; align-items:center; gap:14px;
+    padding:18px 32px; border-bottom:1px solid var(--panel-line);
+  }
+  .icon-btn{ width:34px; height:34px; border-radius:8px; background:var(--panel); border:1px solid var(--panel-line); display:flex; align-items:center; justify-content:center; font-size:14px; cursor:pointer; }
+  .account-pill{ display:flex; align-items:center; gap:8px; background:var(--panel); border:1px solid var(--panel-line); border-radius:20px; padding:6px 14px 6px 6px; font-size:13px; }
+  .account-pill .dot{ width:22px; height:22px; border-radius:50%; background:linear-gradient(135deg,var(--cyan),var(--epic)); }
+
+  .page{ padding: 36px 40px 80px; max-width: 1180px; }
+  .page.hidden{ display:none; }
+
+  /* PASSPORT PAGE */
+  .ptitle{ font-family:'Space Grotesk'; font-size:34px; font-weight:700; }
+  .ptitle .accent{ color: var(--mythic); }
+  .psub{ color:var(--ink-dim); font-size:14px; margin-top:6px; }
+
+  .passport-grid{ display:grid; grid-template-columns: 1.4fr 1fr; gap:24px; margin-top:34px; }
+  .card{ background:var(--panel); border:1px solid var(--panel-line); border-radius: var(--radius); padding:24px; }
+  .label-sm{ font-size:11px; letter-spacing:1.5px; color:var(--ink-dim); text-transform:uppercase; margin-bottom:16px; }
+
+  .pp-card-preview{
+    width:260px; height:260px; margin:10px auto 26px; border-radius:20px; position:relative;
+    background: radial-gradient(circle at 50% 30%, #2a1a3e, #0B0F19 75%);
+    border:1px solid var(--panel-line); display:flex; flex-direction:column; align-items:center; justify-content:center;
+    box-shadow: 0 0 60px -10px rgba(255,92,170,.35);
+  }
+  .pp-card-preview .mk{ width:26px; height:26px; background:linear-gradient(135deg,var(--mythic),var(--epic)); clip-path:polygon(50% 0%,100% 38%,80% 100%,20% 100%,0% 38%); margin-bottom:10px; }
+  .pp-card-preview .uname{ font-family:'Space Grotesk'; font-weight:700; font-size:20px; color:var(--ink-dim); }
+  .pp-card-preview .suffix{ font-size:11px; color:var(--mythic); margin-top:4px; letter-spacing:2px; }
+
+  .uname-input-row{ display:flex; align-items:center; gap:10px; background:var(--bg); border:1px solid var(--panel-line); border-radius:10px; padding:12px 16px; }
+  .uname-input-row input{ flex:1; background:transparent; border:none; outline:none; color:var(--ink); font-size:14px; }
+  .uname-input-row input::placeholder{ color:var(--ink-dim); }
+  .uname-input-row .suf{ color:var(--ink-dim); font-size:13px; }
+
+  .btn{ font-family:'Space Grotesk'; font-weight:600; font-size:14px; padding:13px 22px; border-radius:10px; border:1px solid transparent; cursor:pointer; width:100%; margin-top:14px; transition: transform .15s, box-shadow .2s; }
+  .btn-primary{ background:var(--ink); color:var(--bg); box-shadow:0 8px 24px -6px rgba(237,239,244,.25); }
+  .btn-primary:hover{ transform:translateY(-1px); }
+  .btn-ghost{ background:transparent; color:var(--ink); border-color:var(--panel-line); }
+
+  .minted-row{ display:flex; justify-content:space-between; align-items:center; margin-top:30px; padding-top:18px; border-top:1px solid var(--panel-line); }
+  .minted-num{ font-family:'Space Grotesk'; font-size:26px; font-weight:700; }
+  .live-pill{ font-size:11px; background:#1d3a2a; color:#4ade80; padding:3px 10px; border-radius:20px; }
+
+  .side-card{ margin-bottom:18px; }
+  .side-card h4{ font-family:'Space Grotesk'; font-size:15px; margin-bottom:8px; }
+  .side-card p{ font-size:12.5px; color:var(--ink-dim); line-height:1.6; }
+  .perk-list{ list-style:none; margin-top:14px; display:flex; flex-direction:column; gap:14px; }
+  .perk-list li{ display:flex; gap:10px; font-size:12.5px; }
+  .perk-list b{ display:block; font-size:13px; margin-bottom:2px; }
+  .perk-list .ic{ color:var(--mythic); flex-shrink:0; }
+
+  /* QUESTS PAGE */
+  .quest-layout{ display:grid; grid-template-columns: 1.6fr 1fr; gap:24px; margin-top:28px; }
+  .tabs{ display:flex; gap:6px; background:var(--panel); border:1px solid var(--panel-line); border-radius:10px; padding:4px; width:fit-content; margin-bottom:18px; }
+  .tabs button{ background:transparent; border:none; color:var(--ink-dim); font-family:'Space Grotesk'; font-size:13px; font-weight:600; padding:8px 16px; border-radius:7px; cursor:pointer; }
+  .tabs button.active{ background:#1a2232; color:var(--ink); }
+
+  .quest-row{ display:flex; align-items:center; gap:14px; padding:16px; border-bottom:1px solid var(--panel-line); }
+  .quest-row:last-child{ border-bottom:none; }
+  .quest-ic{ width:38px; height:38px; border-radius:9px; background:#1a2232; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:15px; }
+  .quest-body{ flex:1; min-width:0; }
+  .quest-name{ font-size:14px; font-weight:600; display:flex; align-items:center; gap:8px; }
+  .quest-name .done-badge{ font-size:10px; background:#1d3a2a; color:#4ade80; padding:2px 8px; border-radius:20px; font-weight:500; }
+  .quest-desc{ font-size:12px; color:var(--ink-dim); margin-top:2px; }
+  .quest-reward{ font-size:12.5px; color:var(--legendary); margin-top:4px; }
+  .quest-action{ flex-shrink:0; }
+  .quest-action button{ background:transparent; border:1px solid var(--panel-line); color:var(--ink-dim); font-size:12px; padding:8px 16px; border-radius:8px; cursor:pointer; }
+  .quest-action button.todo{ background:var(--ink); color:var(--bg); border-color:transparent; }
+
+  .gem-balance{ display:flex; align-items:center; justify-content:space-between; }
+  .gem-balance .num{ font-family:'Space Grotesk'; font-size:30px; font-weight:700; display:flex; align-items:center; gap:8px; }
+  .streak-card{ text-align:center; }
+  .streak-card .flame{ font-size:30px; }
+  .streak-card .n{ font-family:'Space Grotesk'; font-size:26px; font-weight:700; margin-top:4px; }
+
+  .ref-steps{ list-style:none; display:flex; flex-direction:column; gap:10px; margin:14px 0; }
+  .ref-steps li{ display:flex; gap:10px; font-size:12.5px; color:var(--ink-dim); }
+  .ref-link-row{ display:flex; gap:8px; background:var(--bg); border:1px solid var(--panel-line); border-radius:8px; padding:10px 12px; align-items:center; margin-top:10px; }
+  .ref-link-row span{ flex:1; font-size:12px; color:var(--ink-dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .ref-link-row button{ background:var(--ink); color:var(--bg); border:none; font-size:11px; font-weight:600; padding:7px 12px; border-radius:6px; cursor:pointer; flex-shrink:0; }
+
+  .tier-rate-row{ display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--panel-line); font-size:13px; }
+  .tier-rate-row:last-child{ border-bottom:none; }
+  .tier-rate-row .dot{ width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .tier-rate-row .tname{ flex:1; }
+  .tier-rate-row .rate{ font-family:'IBM Plex Mono'; color:var(--ink-dim); }
+
+  @media (max-width: 880px){
+    .sidebar{ display:none; }
+    .page{ padding:24px 18px; }
+    .passport-grid, .quest-layout{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="brand"><span class="mark"></span>VOID RUNNERS</div>
+  <nav class="navmenu">
+    <a href="#" data-page="dashboard" class="active"><span class="ic">&#9679;</span> Dashboard</a>
+    <a href="#" data-page="passport"><span class="ic">&#9733;</span> Passport</a>
+    <a href="#" data-page="quests"><span class="ic">&#9889;</span> Quests</a>
+    <a href="#" data-page="mining"><span class="ic">&#9879;</span> Mining</a>
+    <a href="#" data-page="friends"><span class="ic">&#9775;</span> Friends</a>
+  </nav>
+  <div class="sidebar-foot">
+    <a class="back-link" href="index.html">&larr; Back to site</a>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="icon-btn">&#9728;</div>
+    <div class="icon-btn">&#128276;</div>
+    <div class="account-pill"><span class="dot"></span> pilot.void</div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="page" id="page-dashboard">
+    <div class="ptitle">Welcome back, pilot.</div>
+    <div class="psub">Here's what's happening on the grid.</div>
+    <div class="passport-grid" style="margin-top:28px;">
+      <div>
+        <div class="card" style="margin-bottom:18px;">
+          <div class="label-sm">Void Passport</div>
+          <h4 style="font-family:'Space Grotesk'; font-size:18px;">Mint your .VOID identity</h4>
+          <p style="color:var(--ink-dim); font-size:13px; margin-top:6px;">One name across Void Runners — your pilot ID, on-chain.</p>
+          <button class="btn btn-primary" onclick="goPage('passport')">Get your Passport</button>
+        </div>
+        <div class="card">
+          <div class="label-sm">Quests</div>
+          <h4 style="font-family:'Space Grotesk'; font-size:18px;">Complete quests. Earn Gems.</h4>
+          <p style="color:var(--ink-dim); font-size:13px; margin-top:6px;">Turn simple tasks into Gems — whitelist priority and more.</p>
+          <button class="btn btn-ghost" onclick="goPage('quests')">Start questing &rarr;</button>
+        </div>
+      </div>
+      <div>
+        <div class="card side-card">
+          <div class="label-sm">Gem Balance</div>
+          <div class="gem-balance"><div class="num">0 <span style="color:var(--mythic);">&#9670;</span></div></div>
+        </div>
+        <div class="card streak-card side-card">
+          <div class="flame">&#128293;</div>
+          <div class="n">0</div>
+          <div style="font-size:11px; color:var(--ink-dim); margin-top:4px;">DAY STREAK</div>
+          <button class="btn btn-ghost" style="margin-top:14px;">Check in</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASSPORT -->
+  <div class="page hidden" id="page-passport">
+    <div class="ptitle">Get started with <span class="accent">.VOID</span> Username</div>
+    <div class="psub">Your call sign. Your identity. Your key to Void Runners.</div>
+
+    <div class="passport-grid">
+      <div class="card">
+        <div class="label-sm">Choose your username</div>
+        <div class="pp-card-preview">
+          <div class="mk"></div>
+          <div class="uname" id="previewName">Username</div>
+          <div class="suffix">.VOID</div>
+        </div>
+        <div class="uname-input-row">
+          <input type="text" id="unameInput" placeholder="username" oninput="document.getElementById('previewName').textContent = this.value || 'Username'">
+          <span class="suf">.VOID</span>
+        </div>
+        <button class="btn btn-primary">Mint your .VOID</button>
+
+        <div class="minted-row">
+          <div>
+            <div class="minted-num">3,297</div>
+            <div style="font-size:12px; color:var(--ink-dim);">Passport holders</div>
+          </div>
+          <div class="live-pill">LIVE</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card side-card">
+          <div class="label-sm">Void Passport</div>
+          <p>One name for your identity across Void Runners. Mint your unique .VOID and make your place in the grid unmistakably yours.</p>
+        </div>
+        <div class="card side-card">
+          <div class="label-sm">Your Card</div>
+          <ul class="perk-list">
+            <li><span class="ic">&#9670;</span><div><b>An NFT in your wallet</b>Your Passport is minted on-chain to your connected wallet.</div></li>
+            <li><span class="ic">&#9670;</span><div><b>Your identity. Your key.</b>Your unique identity layer across Void Runners.</div></li>
+            <li><span class="ic">&#9670;</span><div><b>Non-transferable</b>Soulbound to your wallet. It can't be sold or transferred.</div></li>
+            <li><span class="ic">&#9670;</span><div><b>Community Verified Status</b>Get recognized as a verified pilot across the grid.</div></li>
+          </ul>
+        </div>
+        <div class="card side-card">
+          <div class="label-sm">What You Unlock</div>
+          <ul class="perk-list">
+            <li><span class="ic">&#9670;</span><div><b>Exclusive access</b>Passport-only quests, drops and early whitelist access.</div></li>
+            <li><span class="ic">&#9670;</span><div><b>More Gem capacity</b>Unlock higher quest reward caps.</div></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUESTS -->
+  <div class="page hidden" id="page-quests">
+    <div class="ptitle" style="font-size:28px;">Quests</div>
+    <div class="psub">Complete tasks straight from the grid and earn &#9670; Gems.</div>
+
+    <div class="quest-layout">
+      <div>
+        <div class="tabs">
+          <button class="active">Social</button>
+          <button>Wallet</button>
+          <button>Friends</button>
+        </div>
+        <div class="card" style="padding:6px 16px;">
+          <div class="quest-row">
+            <div class="quest-ic">&#9733;</div>
+            <div class="quest-body">
+              <div class="quest-name">Claim your .VOID username</div>
+              <div class="quest-desc">Claim your Void Passport (.VOID username).</div>
+              <div class="quest-reward">2,000 &#9670;</div>
+            </div>
+            <div class="quest-action"><button class="todo" onclick="goPage('passport')">Claim</button></div>
+          </div>
+          <div class="quest-row">
+            <div class="quest-ic">&#128172;</div>
+            <div class="quest-body">
+              <div class="quest-name">Join our Discord <span class="done-badge">Completed</span></div>
+              <div class="quest-desc">Join the official Void Runners Discord server.</div>
+              <div class="quest-reward">100 &#9670;</div>
+            </div>
+            <div class="quest-action"><button disabled>Done</button></div>
+          </div>
+          <div class="quest-row" id="xQuestRow">
+            <div class="quest-ic">&#120143;</div>
+            <div class="quest-body">
+              <div class="quest-name" id="xQuestName">Follow us on X</div>
+              <div class="quest-desc" id="xQuestDesc">Connect your X account to auto-verify you follow @Void_Runnner.</div>
+              <div class="quest-reward">100 &#9670;</div>
+            </div>
+            <div class="quest-action">
+              <button class="todo" id="xQuestBtn" onclick="connectX()">Connect X</button>
+            </div>
+          </div>
+          <div class="quest-row">
+            <div class="quest-ic">&#128250;</div>
+            <div class="quest-body">
+              <div class="quest-name">Subscribe on YouTube</div>
+              <div class="quest-desc">Subscribe to the Void Runners channel.</div>
+              <div class="quest-reward">75 &#9670;</div>
+            </div>
+            <div class="quest-action"><button class="todo">Subscribe</button></div>
+          </div>
+          <div class="quest-row">
+            <div class="quest-ic">&#128172;</div>
+            <div class="quest-body">
+              <div class="quest-name">Like, Repost &amp; tag 3 friends</div>
+              <div class="quest-desc">Support the launch on our pinned X post.</div>
+              <div class="quest-reward">100 &#9670;</div>
+            </div>
+            <div class="quest-action"><button class="todo">Go</button></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card side-card">
+          <div class="label-sm">Gem Balance</div>
+          <div class="gem-balance"><div class="num">0 <span style="color:var(--mythic);">&#9670;</span></div></div>
+          <div style="font-size:11px; color:var(--ink-dim); margin-top:6px;">200 &#9670; earned from Quests</div>
+        </div>
+        <div class="card streak-card side-card">
+          <div class="flame">&#128293;</div>
+          <div class="n">1</div>
+          <div style="font-size:11px; color:var(--ink-dim); margin-top:4px;">DAY STREAK</div>
+          <button class="btn btn-ghost" style="margin-top:14px;">Checked in</button>
+        </div>
+        <div class="card side-card">
+          <div class="label-sm">Refer &amp; Earn</div>
+          <p>For each pilot that you invite.</p>
+          <ul class="ref-steps">
+            <li>&#9670; Share your invite link</li>
+            <li>&#9670; Your fren joins and claims their Passport</li>
+            <li>&#9670; You earn Gems for each fren you bring in</li>
+          </ul>
+          <div class="ref-link-row">
+            <span>voidrunners.cc/?ref=pilot01</span>
+            <button onclick="navigator.clipboard && navigator.clipboard.writeText('voidrunners.cc/?ref=pilot01')">Copy</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MINING -->
+  <div class="page hidden" id="page-mining">
+    <div class="ptitle">$VOID <span class="accent">Mining</span></div>
+    <div class="psub">Stake your pilot. Rarer tiers mine faster. Claim your $VOID.</div>
+
+    <div class="card" style="margin-top:28px;">
+      <div style="display:flex; justify-content:space-between; font-size:12.5px; color:var(--ink-dim); margin-bottom:8px;">
+        <span>42.6% of the pool distributed</span>
+        <span>5,740,000 $VOID remaining</span>
+      </div>
+      <div style="height:8px; background:#1a2232; border-radius:6px; overflow:hidden;">
+        <div style="width:42.6%; height:100%; background:linear-gradient(90deg,var(--mythic),var(--epic));"></div>
+      </div>
+      <div style="font-size:11.5px; color:var(--ink-dim); margin-top:8px;">Mining stops for everyone once the pool runs out.</div>
+    </div>
+
+    <div class="passport-grid" style="margin-top:20px;">
+      <div>
+        <div class="card">
+          <div class="label-sm">My Positions</div>
+          <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:18px;">
+            <div>
+              <div style="font-size:11.5px; color:var(--ink-dim);">$VOID MINING NOW</div>
+              <div style="font-family:'Space Grotesk'; font-size:30px; font-weight:700;">0.0000 <span style="font-size:14px; color:var(--ink-dim);">/ day</span></div>
+            </div>
+          </div>
+
+          <div style="border-top:1px solid var(--panel-line); padding-top:18px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <b style="font-size:14px;">No pilot staked</b>
+                <p style="font-size:12.5px; color:var(--ink-dim); margin-top:3px;">Stake a Void Runners pilot to start mining $VOID.</p>
+              </div>
+              <span style="font-size:11px; background:#3a2417; color:var(--rare); padding:3px 10px; border-radius:20px;">INACTIVE</span>
+            </div>
+            <button class="btn btn-primary">+ Stake a pilot</button>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:18px;">
+          <div class="label-sm">Mining Rate by Tier</div>
+          <div id="tierRateList"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card side-card">
+          <div class="label-sm">My Status</div>
+          <p style="font-size:11.5px;">GEM BALANCE</p>
+          <div class="gem-balance" style="margin-bottom:14px;"><div class="num" style="font-size:22px;">0 <span style="color:var(--mythic);">&#9670;</span></div></div>
+          <p style="font-size:11.5px;">$VOID BALANCE</p>
+          <div class="gem-balance"><div class="num" style="font-size:22px;">0.00 <span style="color:var(--cyan);">&#9671;</span></div></div>
+        </div>
+        <div class="card side-card">
+          <div class="label-sm">Staked Pilots</div>
+          <p>Stake your Passport first to unlock a second mining slot (up to 2 at once).</p>
+          <button class="btn btn-ghost" onclick="goPage('passport')">Get Passport</button>
+        </div>
+        <div class="card side-card">
+          <div class="label-sm">How mining works</div>
+          <p>Stake an NFT pilot — it stays in your wallet, locked by the contract. Mythic and Legendary tiers earn a higher daily $VOID rate. Claim anytime, unstake anytime.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tabs" style="margin-top:22px;">
+      <button class="active">Pool Info</button>
+      <button>Leaderboard</button>
+    </div>
+  </div>
+
+  <!-- FRIENDS -->
+  <div class="page hidden" id="page-friends">
+    <div class="ptitle" style="font-size:28px;">Friends</div>
+    <div class="psub">Invite pilots to the grid and earn Gems for every join.</div>
+    <div class="card" style="margin-top:28px; max-width:520px;">
+      <div class="label-sm">Your invite link</div>
+      <div class="ref-link-row">
+        <span>voidrunners.cc/?ref=pilot01</span>
+        <button onclick="navigator.clipboard && navigator.clipboard.writeText('voidrunners.cc/?ref=pilot01')">Copy</button>
+      </div>
+      <p style="margin-top:18px; font-size:13px; color:var(--ink-dim);">0 friends joined &middot; 0 &#9670; earned</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const TIER_RATES = [
+    { name:'Common', color:'var(--common)', rate:'1.0 $VOID / day' },
+    { name:'Rare', color:'var(--rare)', rate:'1.8 $VOID / day' },
+    { name:'Epic', color:'var(--epic)', rate:'3.2 $VOID / day' },
+    { name:'Legendary', color:'var(--legendary)', rate:'5.5 $VOID / day' },
+    { name:'Mythic', color:'var(--mythic)', rate:'10.0 $VOID / day' },
+  ];
+  document.getElementById('tierRateList').innerHTML = TIER_RATES.map(t => `
+    <div class="tier-rate-row">
+      <span class="dot" style="background:${t.color}"></span>
+      <span class="tname">${t.name}</span>
+      <span class="rate">${t.rate}</span>
+    </div>
+  `).join('');
+
+  function connectX(){
+    const btn = document.getElementById('xQuestBtn');
+    const desc = document.getElementById('xQuestDesc');
+    const name = document.getElementById('xQuestName');
+    btn.textContent = 'Connecting...';
+    btn.disabled = true;
+    desc.textContent = 'Opening X authorization...';
+    setTimeout(() => {
+      desc.textContent = 'Checking follow status...';
+      setTimeout(() => {
+        name.innerHTML = 'Follow us on X <span class="done-badge">Completed</span>';
+        desc.textContent = 'Verified via X — @your_handle follows @Void_Runnner.';
+        btn.outerHTML = '<button disabled>Done</button>';
+      }, 1200);
+    }, 900);
+  }
+
+  function goPage(name){
+    document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+    document.getElementById('page-' + name).classList.remove('hidden');
+    document.querySelectorAll('.navmenu a').forEach(a => a.classList.remove('active'));
+    const navLink = document.querySelector('.navmenu a[data-page="' + name + '"]');
+    if(navLink) navLink.classList.add('active');
+  }
+  document.querySelectorAll('.navmenu a').forEach(a => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      goPage(a.dataset.page);
+    });
+  });
+</script>
+
+</body>
+</html>
