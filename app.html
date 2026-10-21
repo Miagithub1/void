@@ -143,6 +143,14 @@
     .page{ padding:24px 18px; }
     .passport-grid, .quest-layout{ grid-template-columns:1fr; }
   }
+
+  .app-status{font-size:12px;line-height:1.5;margin-top:10px;color:var(--ink-dim);min-height:18px}
+  .app-status.ok{color:#4ade80}
+  .app-status.err{color:#fb7185}
+  .quest-action button:disabled{opacity:.65;cursor:not-allowed}
+  .uname-input-row input{min-width:0}
+  @media(max-width:480px){.pp-card-preview{width:min(260px,100%);height:230px}.card{padding:18px}}
+
 </style>
 </head>
 <body>
@@ -190,13 +198,14 @@
       <div>
         <div class="card side-card">
           <div class="label-sm">Gem Balance</div>
-          <div class="gem-balance"><div class="num">0 <span style="color:var(--mythic);">&#9670;</span></div></div>
+          <div class="gem-balance"><div class="num"><span id="gemBalanceDashboard">0</span> <span style="color:var(--mythic);">&#9670;</span></div></div>
         </div>
         <div class="card streak-card side-card">
           <div class="flame">&#128293;</div>
-          <div class="n">0</div>
+          <div class="n" id="streakDashboard">0</div>
           <div style="font-size:11px; color:var(--ink-dim); margin-top:4px;">DAY STREAK</div>
-          <button class="btn btn-ghost" style="margin-top:14px;">Check in</button>
+          <button class="btn btn-ghost" id="checkInBtn" style="margin-top:14px;" type="button">Check in</button>
+          <div class="app-status" id="checkInStatus" aria-live="polite"></div>
         </div>
       </div>
     </div>
@@ -219,7 +228,8 @@
           <input type="text" id="unameInput" placeholder="username" oninput="document.getElementById('previewName').textContent = this.value || 'Username'">
           <span class="suf">.VOID</span>
         </div>
-        <button class="btn btn-primary">Mint your .VOID</button>
+        <button class="btn btn-primary" id="passportMintBtn" type="button">Mint your .VOID</button>
+        <div class="app-status" id="passportStatus" aria-live="polite">Demo mode: on-chain mint is not connected yet.</div>
 
         <div class="minted-row">
           <div>
@@ -275,7 +285,7 @@
               <div class="quest-desc">Claim your Void Passport (.VOID username).</div>
               <div class="quest-reward">2,000 &#9670;</div>
             </div>
-            <div class="quest-action"><button class="todo" onclick="goPage('passport')">Claim</button></div>
+            <div class="quest-action"><button class="todo" id="passportQuestBtn" type="button" onclick="goPage('passport')">Claim</button></div>
           </div>
           <div class="quest-row">
             <div class="quest-ic">&#128172;</div>
@@ -304,7 +314,7 @@
               <div class="quest-desc">Subscribe to the Void Runners channel.</div>
               <div class="quest-reward">75 &#9670;</div>
             </div>
-            <div class="quest-action"><button class="todo">Subscribe</button></div>
+            <div class="quest-action"><button class="todo" id="youtubeQuestBtn" type="button">Subscribe</button></div>
           </div>
           <div class="quest-row">
             <div class="quest-ic">&#128172;</div>
@@ -313,7 +323,7 @@
               <div class="quest-desc">Support the launch on our pinned X post.</div>
               <div class="quest-reward">100 &#9670;</div>
             </div>
-            <div class="quest-action"><button class="todo">Go</button></div>
+            <div class="quest-action"><button class="todo" id="socialQuestBtn" type="button">Go</button></div>
           </div>
         </div>
       </div>
@@ -321,14 +331,15 @@
       <div>
         <div class="card side-card">
           <div class="label-sm">Gem Balance</div>
-          <div class="gem-balance"><div class="num">0 <span style="color:var(--mythic);">&#9670;</span></div></div>
-          <div style="font-size:11px; color:var(--ink-dim); margin-top:6px;">200 &#9670; earned from Quests</div>
+          <div class="gem-balance"><div class="num"><span id="gemBalanceQuests">0</span> <span style="color:var(--mythic);">&#9670;</span></div></div>
+          <div style="font-size:11px; color:var(--ink-dim); margin-top:6px;" id="questGemNote">Gems earned from Quests</div>
         </div>
         <div class="card streak-card side-card">
           <div class="flame">&#128293;</div>
-          <div class="n">1</div>
+          <div class="n" id="streakQuests">0</div>
           <div style="font-size:11px; color:var(--ink-dim); margin-top:4px;">DAY STREAK</div>
-          <button class="btn btn-ghost" style="margin-top:14px;">Checked in</button>
+          <button class="btn btn-ghost" id="checkInBtnQuests" style="margin-top:14px;" type="button">Check in</button>
+          <div class="app-status" id="checkInStatusQuests" aria-live="polite"></div>
         </div>
         <div class="card side-card">
           <div class="label-sm">Refer &amp; Earn</div>
@@ -396,7 +407,7 @@
         <div class="card side-card">
           <div class="label-sm">My Status</div>
           <p style="font-size:11.5px;">GEM BALANCE</p>
-          <div class="gem-balance" style="margin-bottom:14px;"><div class="num" style="font-size:22px;">0 <span style="color:var(--mythic);">&#9670;</span></div></div>
+          <div class="gem-balance" style="margin-bottom:14px;"><div class="num" style="font-size:22px;"><span id="gemBalanceMining">0</span> <span style="color:var(--mythic);">&#9670;</span></div></div>
           <p style="font-size:11.5px;">$VOID BALANCE</p>
           <div class="gem-balance"><div class="num" style="font-size:22px;">0.00 <span style="color:var(--cyan);">&#9671;</span></div></div>
         </div>
@@ -435,13 +446,17 @@
 </div>
 
 <script>
+  // VOID RUNNERS app demo state. This saves in this browser only.
+  // Real on-chain passport minting and social verification require backend/contracts.
+  const STORAGE_KEY = 'voidRunnersAppDemoV1';
   const TIER_RATES = [
     { name:'Common', color:'var(--common)', rate:'1.0 $VOID / day' },
     { name:'Rare', color:'var(--rare)', rate:'1.8 $VOID / day' },
     { name:'Epic', color:'var(--epic)', rate:'3.2 $VOID / day' },
     { name:'Legendary', color:'var(--legendary)', rate:'5.5 $VOID / day' },
-    { name:'Mythic', color:'var(--mythic)', rate:'10.0 $VOID / day' },
+    { name:'Mythic', color:'var(--mythic)', rate:'10.0 $VOID / day' }
   ];
+
   document.getElementById('tierRateList').innerHTML = TIER_RATES.map(t => `
     <div class="tier-rate-row">
       <span class="dot" style="background:${t.color}"></span>
@@ -450,26 +465,153 @@
     </div>
   `).join('');
 
-  function connectX(){
-    const btn = document.getElementById('xQuestBtn');
-    const desc = document.getElementById('xQuestDesc');
-    const name = document.getElementById('xQuestName');
-    btn.textContent = 'Connecting...';
-    btn.disabled = true;
-    desc.textContent = 'Opening X authorization...';
-    setTimeout(() => {
-      desc.textContent = 'Checking follow status...';
-      setTimeout(() => {
-        name.innerHTML = 'Follow us on X <span class="done-badge">Completed</span>';
-        desc.textContent = 'Verified via X — @your_handle follows @Void_Runnner.';
-        btn.outerHTML = '<button disabled>Done</button>';
-      }, 1200);
-    }, 900);
+  const todayKey = () => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  };
+  const dateBefore = (a, b) => {
+    const da = new Date(`${a}T12:00:00`);
+    const db = new Date(`${b}T12:00:00`);
+    return Math.round((db-da)/86400000);
+  };
+  function loadState(){
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+      return {
+        gems: Number.isFinite(saved.gems) && saved.gems >= 0 ? saved.gems : 0,
+        streak: Number.isFinite(saved.streak) && saved.streak >= 0 ? saved.streak : 0,
+        lastCheckIn: typeof saved.lastCheckIn === 'string' ? saved.lastCheckIn : '',
+        username: typeof saved.username === 'string' ? saved.username : '',
+        claimed: saved.claimed && typeof saved.claimed === 'object' ? saved.claimed : {}
+      };
+    } catch (_) {
+      return {gems:0, streak:0, lastCheckIn:'', username:'', claimed:{}};
+    }
   }
+  let appState = loadState();
+  function saveState(){
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(appState)); }
+    catch (_) { showStatus('checkInStatus', 'Could not save in this browser. Enable site storage and try again.', 'err'); }
+  }
+  function showStatus(id, message, kind=''){
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = message;
+    el.className = 'app-status' + (kind ? ' ' + kind : '');
+  }
+  function renderState(){
+    ['gemBalanceDashboard','gemBalanceQuests','gemBalanceMining'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = appState.gems.toLocaleString();
+    });
+    ['streakDashboard','streakQuests'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = String(appState.streak);
+    });
+    ['checkInBtn','checkInBtnQuests'].forEach(id => {
+      const btn = document.getElementById(id);
+      if (!btn) return;
+      const already = appState.lastCheckIn === todayKey();
+      btn.disabled = already;
+      btn.textContent = already ? 'Checked in today' : 'Check in';
+    });
+    const input = document.getElementById('unameInput');
+    const preview = document.getElementById('previewName');
+    if (input && !input.value && appState.username) input.value = appState.username;
+    if (preview) preview.textContent = (input && input.value.trim()) || appState.username || 'Username';
+    const questBtn = document.getElementById('passportQuestBtn');
+    if (questBtn) {
+      const done = !!appState.claimed.passport;
+      questBtn.textContent = done ? 'Claimed' : 'Claim';
+      questBtn.disabled = done;
+    }
+    const note = document.getElementById('questGemNote');
+    if (note) note.textContent = 'Saved demo Gems earned in this browser';
+  }
+
+  function checkIn(){
+    const today = todayKey();
+    if (appState.lastCheckIn === today) {
+      showStatus('checkInStatus','You have already checked in today. Come back tomorrow.');
+      showStatus('checkInStatusQuests','You have already checked in today. Come back tomorrow.');
+      return;
+    }
+    if (appState.lastCheckIn && dateBefore(appState.lastCheckIn, today) === 1) {
+      appState.streak += 1;
+    } else {
+      appState.streak = 1;
+    }
+    appState.lastCheckIn = today;
+    appState.gems += 25;
+    saveState();
+    renderState();
+    showStatus('checkInStatus','Daily check-in complete! +25 demo Gems.', 'ok');
+    showStatus('checkInStatusQuests','Daily check-in complete! +25 demo Gems.', 'ok');
+  }
+  ['checkInBtn','checkInBtnQuests'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) btn.addEventListener('click', checkIn);
+  });
+
+  // Username preview and local save. This does NOT mint an NFT on-chain.
+  const unameInput = document.getElementById('unameInput');
+  if (unameInput) {
+    unameInput.addEventListener('input', () => {
+      const preview = document.getElementById('previewName');
+      if (preview) preview.textContent = unameInput.value.trim() || 'Username';
+      showStatus('passportStatus', '');
+    });
+  }
+  const mintBtn = document.getElementById('passportMintBtn');
+  if (mintBtn) mintBtn.addEventListener('click', () => {
+    const raw = (unameInput?.value || '').trim().toLowerCase();
+    if (!raw) {
+      showStatus('passportStatus','Please enter a username first.','err');
+      unameInput?.focus();
+      return;
+    }
+    if (!/^[a-z0-9_]{3,20}$/.test(raw)) {
+      showStatus('passportStatus','Use 3–20 characters: lowercase letters, numbers, or underscore.','err');
+      unameInput?.focus();
+      return;
+    }
+    if (appState.username && appState.username !== raw) {
+      showStatus('passportStatus','A demo username is already saved in this browser. Clear site data to reset the demo.','err');
+      return;
+    }
+    if (!appState.username) {
+      appState.username = raw;
+      if (!appState.claimed.passport) {
+        appState.claimed.passport = true;
+        appState.gems += 2000;
+      }
+      saveState();
+      renderState();
+    }
+    showStatus('passportStatus', `.${'VOID'} name "${raw}" saved in this browser. This is demo-only: no wallet transaction or NFT mint occurred.`, 'ok');
+  });
+
+  // The original mock X flow claimed a follow was verified without contacting X.
+  // Replace that false success with a truthful demo notice.
+  function connectX(){
+    showStatus('xQuestDesc','X verification is not connected. No follow has been verified.','err');
+    const btn = document.getElementById('xQuestBtn');
+    if (btn) { btn.disabled = false; btn.textContent = 'Not connected'; }
+  }
+
+  const youtubeBtn = document.getElementById('youtubeQuestBtn');
+  if (youtubeBtn) youtubeBtn.addEventListener('click', () => {
+    showStatus('questGemNote','YouTube verification is not connected; no Gems were awarded.','err');
+  });
+  const socialBtn = document.getElementById('socialQuestBtn');
+  if (socialBtn) socialBtn.addEventListener('click', () => {
+    showStatus('questGemNote','Social task verification is not connected; no Gems were awarded.','err');
+  });
 
   function goPage(name){
     document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
-    document.getElementById('page-' + name).classList.remove('hidden');
+    const page = document.getElementById('page-' + name);
+    if (page) page.classList.remove('hidden');
     document.querySelectorAll('.navmenu a').forEach(a => a.classList.remove('active'));
     const navLink = document.querySelector('.navmenu a[data-page="' + name + '"]');
     if(navLink) navLink.classList.add('active');
@@ -480,6 +622,8 @@
       goPage(a.dataset.page);
     });
   });
+
+  renderState();
 </script>
 
 </body>
